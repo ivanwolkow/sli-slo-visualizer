@@ -265,19 +265,35 @@ button:not(:disabled):hover {
 }
 
 .sli-metrics-table .metric-name-col {
-  width: 44%;
+  width: 40%;
 }
 
 .sli-metrics-table .metric-number-col {
-  width: 14%;
+  width: 13%;
 }
 
 .sli-metrics-table .metric-actions-col {
-  width: 14%;
+  width: 21%;
 }
 
 .metric-name-cell input {
   width: 100%;
+}
+
+.metric-actions-cell {
+  min-width: 0;
+}
+
+.metric-reorder-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.btn-icon {
+  padding: 6px 8px;
+  text-align: center;
 }
 
 .sli-metrics-panel {
@@ -353,6 +369,10 @@ button:not(:disabled):hover {
   .sli-metrics-table .metric-actions-cell button {
     width: 100%;
     padding-inline: 6px;
+  }
+
+  .sli-metrics-table .metric-reorder-buttons {
+    margin-bottom: 6px;
   }
 
   .sli-metrics-table .metric-name-col,

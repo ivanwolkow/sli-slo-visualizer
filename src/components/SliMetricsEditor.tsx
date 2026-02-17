@@ -5,6 +5,8 @@ interface SliMetricsEditorProps {
   errors: string[];
   onAddMetric: () => void;
   onUpdateMetric: (id: string, patch: Partial<SliMetricConfig>) => void;
+  onMoveMetricUp: (id: string) => void;
+  onMoveMetricDown: (id: string) => void;
   onRemoveMetric: (id: string) => void;
 }
 
@@ -13,6 +15,8 @@ export const SliMetricsEditor = ({
   errors,
   onAddMetric,
   onUpdateMetric,
+  onMoveMetricUp,
+  onMoveMetricDown,
   onRemoveMetric
 }: SliMetricsEditorProps): JSX.Element => {
   return (
@@ -35,7 +39,7 @@ export const SliMetricsEditor = ({
             </tr>
           </thead>
           <tbody>
-            {metrics.map((metric) => (
+            {metrics.map((metric, index) => (
               <tr key={metric.id}>
                 <td className="metric-name-cell">
                   <span className="compact-field-label">Name</span>
@@ -96,6 +100,26 @@ export const SliMetricsEditor = ({
                 </td>
                 <td className="metric-actions-cell">
                   <span className="compact-field-label">Actions</span>
+                  <div className="metric-reorder-buttons">
+                    <button
+                      type="button"
+                      className="btn-ghost btn-icon"
+                      aria-label={`Move ${metric.name} up`}
+                      onClick={() => onMoveMetricUp(metric.id)}
+                      disabled={index === 0}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-ghost btn-icon"
+                      aria-label={`Move ${metric.name} down`}
+                      onClick={() => onMoveMetricDown(metric.id)}
+                      disabled={index === metrics.length - 1}
+                    >
+                      ↓
+                    </button>
+                  </div>
                   <button
                     type="button"
                     className="btn-ghost"

@@ -31,6 +31,8 @@ interface SimulationStore {
   removeBucket: (id: string) => void;
   addMetric: () => void;
   updateMetric: (id: string, patch: Partial<SliMetricConfig>) => void;
+  moveMetricUp: (id: string) => void;
+  moveMetricDown: (id: string) => void;
   removeMetric: (id: string) => void;
   start: () => void;
   pause: () => void;
@@ -89,6 +91,26 @@ const collectValidationErrors = (config: SimulationConfig): string[] => {
   const bucketValidation = validateLatencyBuckets(config.buckets);
   const metricValidation = validateSliMetrics(config.metrics);
   return [...bucketValidation.errors, ...metricValidation.errors];
+};
+
+const moveMetricByOffset = (
+  metrics: SliMetricConfig[],
+  id: string,
+  offset: -1 | 1
+): SliMetricConfig[] => {
+  const index = metrics.findIndex((metric) => metric.id === id);
+  if (index < 0) {
+    return metrics;
+  }
+
+  const target = index + offset;
+  if (target < 0 || target >= metrics.length) {
+    return metrics;
+  }
+
+  const next = [...metrics];
+  [next[index], next[target]] = [next[target], next[index]];
+  return next;
 };
 
 let engine: SimulationEngine | null = null;
@@ -224,6 +246,26 @@ export const useSimulationStore = create<SimulationStore>((set, get) => {
         metric.id === id ? { ...metric, ...patch } : metric
       );
 
+      const nextConfig: SimulationConfig = {
+        ...get().config,
+        metrics: nextMetrics
+      };
+
+      applyConfig(nextConfig);
+    },
+
+    moveMetricUp: (id) => {
+      const nextMetrics = moveMetricByOffset(get().config.metrics, id, -1);
+      const nextConfig: SimulationConfig = {
+        ...get().config,
+        metrics: nextMetrics
+      };
+
+      applyConfig(nextConfig);
+    },
+
+    moveMetricDown: (id) => {
+      const nextMetrics = moveMetricByOffset(get().config.metrics, id, 1);
       const nextConfig: SimulationConfig = {
         ...get().config,
         metrics: nextMetrics

@@ -60,4 +60,24 @@ describe('simulation store bucket balancing', () => {
     expect(single.percentage).toBe(100);
     expect(sumPercentages(store.getState().config.buckets)).toBe(100);
   });
+
+  it('reorders SLI metrics when move actions are used', async () => {
+    vi.resetModules();
+    const store = await loadStore();
+
+    const namesBefore = store.getState().config.metrics.map((metric) => metric.name);
+    expect(namesBefore).toEqual(['SLI <= 1000ms / 30s', 'SLI <= 1000ms / 60s', 'SLI <= 1000ms / 300s']);
+
+    const firstId = store.getState().config.metrics[0].id;
+    store.getState().moveMetricDown(firstId);
+
+    const namesAfterDown = store.getState().config.metrics.map((metric) => metric.name);
+    expect(namesAfterDown).toEqual(['SLI <= 1000ms / 60s', 'SLI <= 1000ms / 30s', 'SLI <= 1000ms / 300s']);
+
+    const lastId = store.getState().config.metrics[2].id;
+    store.getState().moveMetricUp(lastId);
+
+    const namesAfterUp = store.getState().config.metrics.map((metric) => metric.name);
+    expect(namesAfterUp).toEqual(['SLI <= 1000ms / 60s', 'SLI <= 1000ms / 300s', 'SLI <= 1000ms / 30s']);
+  });
 });

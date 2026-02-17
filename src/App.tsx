@@ -32,6 +32,8 @@ function App(): JSX.Element {
   const removeBucket = useSimulationStore((state) => state.removeBucket);
   const addMetric = useSimulationStore((state) => state.addMetric);
   const updateMetric = useSimulationStore((state) => state.updateMetric);
+  const moveMetricUp = useSimulationStore((state) => state.moveMetricUp);
+  const moveMetricDown = useSimulationStore((state) => state.moveMetricDown);
   const removeMetric = useSimulationStore((state) => state.removeMetric);
   const start = useSimulationStore((state) => state.start);
   const pause = useSimulationStore((state) => state.pause);
@@ -80,6 +82,8 @@ function App(): JSX.Element {
             errors={metricErrors}
             onAddMetric={addMetric}
             onUpdateMetric={updateMetric}
+            onMoveMetricUp={moveMetricUp}
+            onMoveMetricDown={moveMetricDown}
             onRemoveMetric={removeMetric}
           />
         </div>
