@@ -27,7 +27,8 @@ function App(): JSX.Element {
   const setRps = useSimulationStore((state) => state.setRps);
   const setSpeedMultiplier = useSimulationStore((state) => state.setSpeedMultiplier);
   const addBucket = useSimulationStore((state) => state.addBucket);
-  const updateBucket = useSimulationStore((state) => state.updateBucket);
+  const setBucketPercentage = useSimulationStore((state) => state.setBucketPercentage);
+  const setBucketLatency = useSimulationStore((state) => state.setBucketLatency);
   const removeBucket = useSimulationStore((state) => state.removeBucket);
   const addMetric = useSimulationStore((state) => state.addMetric);
   const updateMetric = useSimulationStore((state) => state.updateMetric);
@@ -69,7 +70,8 @@ function App(): JSX.Element {
             buckets={config.buckets}
             errors={bucketErrors}
             onAddBucket={addBucket}
-            onUpdateBucket={updateBucket}
+            onSetBucketPercentage={setBucketPercentage}
+            onSetBucketLatency={setBucketLatency}
             onRemoveBucket={removeBucket}
           />
 

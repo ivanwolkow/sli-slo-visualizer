@@ -6,6 +6,11 @@ import type {
   SpeedMultiplier,
   SliMetricConfig
 } from '../domain/types';
+import {
+  allocateForNewBucketEvenSteal,
+  rebalanceWithSelectedBucket,
+  redistributeAfterRemoval
+} from '../domain/distribution';
 import { validateLatencyBuckets, validateSliMetrics } from '../domain/validation';
 import { SimulationEngine } from '../simulation/engine';
 
@@ -21,7 +26,8 @@ interface SimulationStore {
   setRps: (rps: number) => void;
   setSpeedMultiplier: (speed: SpeedMultiplier) => void;
   addBucket: () => void;
-  updateBucket: (id: string, patch: Partial<LatencyBucket>) => void;
+  setBucketPercentage: (id: string, percentage: number) => void;
+  setBucketLatency: (id: string, latencyMs: number) => void;
   removeBucket: (id: string) => void;
   addMetric: () => void;
   updateMetric: (id: string, patch: Partial<SliMetricConfig>) => void;
@@ -43,9 +49,8 @@ const createId = (): string => {
 };
 
 const defaultBuckets = (): LatencyBucket[] => [
-  { id: createId(), percentage: 70, latencyMs: 500 },
-  { id: createId(), percentage: 20, latencyMs: 900 },
-  { id: createId(), percentage: 10, latencyMs: 1100 }
+  { id: createId(), percentage: 80, latencyMs: 800 },
+  { id: createId(), percentage: 20, latencyMs: 1200 }
 ];
 
 const defaultMetrics = (): SliMetricConfig[] => [
@@ -54,21 +59,21 @@ const defaultMetrics = (): SliMetricConfig[] => [
     name: 'SLI <= 1000ms / 30s',
     thresholdMs: 1000,
     windowSec: 30,
-    sloTargetPct: 99
+    sloTargetPct: 90
   },
   {
     id: createId(),
-    name: 'SLI <= 500ms / 60s',
-    thresholdMs: 500,
+    name: 'SLI <= 1000ms / 60s',
+    thresholdMs: 1000,
     windowSec: 60,
-    sloTargetPct: 99
+    sloTargetPct: 90
   },
   {
     id: createId(),
-    name: 'SLI <= 1200ms / 300s',
-    thresholdMs: 1200,
+    name: 'SLI <= 1000ms / 300s',
+    thresholdMs: 1000,
     windowSec: 300,
-    sloTargetPct: 99
+    sloTargetPct: 90
   }
 ];
 
@@ -144,24 +149,35 @@ export const useSimulationStore = create<SimulationStore>((set, get) => {
     },
 
     addBucket: () => {
+      const newBucket: LatencyBucket = {
+        id: createId(),
+        percentage: 0,
+        latencyMs: 1000
+      };
+
+      const nextBuckets = allocateForNewBucketEvenSteal(get().config.buckets, newBucket);
       const nextConfig: SimulationConfig = {
         ...get().config,
-        buckets: [
-          ...get().config.buckets,
-          {
-            id: createId(),
-            percentage: 0,
-            latencyMs: 1000
-          }
-        ]
+        buckets: nextBuckets
       };
 
       applyConfig(nextConfig);
     },
 
-    updateBucket: (id, patch) => {
+    setBucketPercentage: (id, percentage) => {
+      const nextBuckets = rebalanceWithSelectedBucket(get().config.buckets, id, percentage);
+
+      const nextConfig: SimulationConfig = {
+        ...get().config,
+        buckets: nextBuckets
+      };
+
+      applyConfig(nextConfig);
+    },
+
+    setBucketLatency: (id, latencyMs) => {
       const nextBuckets = get().config.buckets.map((bucket) =>
-        bucket.id === id ? { ...bucket, ...patch } : bucket
+        bucket.id === id ? { ...bucket, latencyMs: clamp(Math.round(latencyMs), 1, 10_000) } : bucket
       );
 
       const nextConfig: SimulationConfig = {
@@ -177,7 +193,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => {
         return;
       }
 
-      const nextBuckets = get().config.buckets.filter((bucket) => bucket.id !== id);
+      const nextBuckets = redistributeAfterRemoval(get().config.buckets, id);
       const nextConfig: SimulationConfig = {
         ...get().config,
         buckets: nextBuckets
@@ -192,7 +208,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => {
         name: `SLI <= 1000ms / 60s`,
         thresholdMs: 1000,
         windowSec: 60,
-        sloTargetPct: 99
+        sloTargetPct: 90
       };
 
       const nextConfig: SimulationConfig = {

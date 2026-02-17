@@ -4,21 +4,24 @@ interface LatencyDistributionEditorProps {
   buckets: LatencyBucket[];
   errors: string[];
   onAddBucket: () => void;
-  onUpdateBucket: (id: string, patch: Partial<LatencyBucket>) => void;
+  onSetBucketPercentage: (id: string, percentage: number) => void;
+  onSetBucketLatency: (id: string, latencyMs: number) => void;
   onRemoveBucket: (id: string) => void;
 }
 
 const formatTotalPercentage = (buckets: LatencyBucket[]): string =>
-  buckets.reduce((sum, bucket) => sum + bucket.percentage, 0).toFixed(2);
+  buckets.reduce((sum, bucket) => sum + bucket.percentage, 0).toString();
 
 export const LatencyDistributionEditor = ({
   buckets,
   errors,
   onAddBucket,
-  onUpdateBucket,
+  onSetBucketPercentage,
+  onSetBucketLatency,
   onRemoveBucket
 }: LatencyDistributionEditorProps): JSX.Element => {
   const totalPercentage = formatTotalPercentage(buckets);
+  const isSingleBucket = buckets.length <= 1;
 
   return (
     <section className="panel reveal">
@@ -38,30 +41,46 @@ export const LatencyDistributionEditor = ({
           </tr>
         </thead>
         <tbody>
-          {buckets.map((bucket) => (
+          {buckets.map((bucket, index) => (
             <tr key={bucket.id}>
-              <td>
-                <input
-                  aria-label="Bucket percentage"
-                  type="number"
-                  min={0}
-                  step={0.1}
-                  value={bucket.percentage}
-                  onChange={(event) => {
-                    onUpdateBucket(bucket.id, { percentage: Number(event.target.value) });
-                  }}
-                />
+              <td className="percentage-cell">
+                <div className="percentage-controls">
+                  <input
+                    aria-label={`Bucket ${index + 1} percentage slider`}
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={bucket.percentage}
+                    disabled={isSingleBucket}
+                    onChange={(event) => {
+                      onSetBucketPercentage(bucket.id, Number(event.target.value));
+                    }}
+                  />
+                  <input
+                    aria-label={`Bucket ${index + 1} percentage input`}
+                    type="number"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={bucket.percentage}
+                    disabled={isSingleBucket}
+                    onChange={(event) => {
+                      onSetBucketPercentage(bucket.id, Number(event.target.value));
+                    }}
+                  />
+                </div>
               </td>
               <td>
                 <input
-                  aria-label="Bucket latency"
+                  aria-label={`Bucket ${index + 1} latency input`}
                   type="number"
                   min={1}
                   max={10000}
                   step={1}
                   value={bucket.latencyMs}
                   onChange={(event) => {
-                    onUpdateBucket(bucket.id, { latencyMs: Number(event.target.value) });
+                    onSetBucketLatency(bucket.id, Number(event.target.value));
                   }}
                 />
               </td>
@@ -70,7 +89,7 @@ export const LatencyDistributionEditor = ({
                   type="button"
                   className="btn-ghost"
                   onClick={() => onRemoveBucket(bucket.id)}
-                  disabled={buckets.length <= 1}
+                  disabled={isSingleBucket}
                 >
                   Remove
                 </button>

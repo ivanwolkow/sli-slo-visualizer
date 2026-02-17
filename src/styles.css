@@ -259,6 +259,23 @@ button:not(:disabled):hover {
   border-bottom: 1px solid #d3e6ed;
 }
 
+.percentage-cell {
+  min-width: 210px;
+}
+
+.percentage-controls {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(120px, 1fr) 74px;
+  align-items: center;
+}
+
+.percentage-controls input[type='range'] {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
 .cards-grid,
 .charts-grid {
   display: grid;
