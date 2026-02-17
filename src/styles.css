@@ -75,6 +75,7 @@ dd {
   display: grid;
   gap: 16px;
   align-content: start;
+  min-width: 0;
 }
 
 .panel {
@@ -257,6 +258,108 @@ button:not(:disabled):hover {
   text-align: left;
   padding: 7px 6px;
   border-bottom: 1px solid #d3e6ed;
+}
+
+.sli-metrics-table {
+  table-layout: fixed;
+}
+
+.sli-metrics-table .metric-name-col {
+  width: 44%;
+}
+
+.sli-metrics-table .metric-number-col {
+  width: 14%;
+}
+
+.sli-metrics-table .metric-actions-col {
+  width: 14%;
+}
+
+.metric-name-cell input {
+  width: 100%;
+}
+
+.sli-metrics-panel {
+  container-type: inline-size;
+}
+
+.compact-field-label {
+  display: none;
+}
+
+@container (max-width: 700px) {
+  .sli-metrics-table {
+    table-layout: auto;
+  }
+
+  .sli-metrics-table thead {
+    display: none;
+  }
+
+  .sli-metrics-table,
+  .sli-metrics-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .sli-metrics-table tr {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-areas:
+      "name name name name"
+      "threshold window slo actions";
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #d3e6ed;
+  }
+
+  .sli-metrics-table td {
+    border-bottom: none;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .compact-field-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .sli-metrics-table .metric-name-cell {
+    grid-area: name;
+  }
+
+  .sli-metrics-table .metric-threshold-cell {
+    grid-area: threshold;
+  }
+
+  .sli-metrics-table .metric-window-cell {
+    grid-area: window;
+  }
+
+  .sli-metrics-table .metric-slo-cell {
+    grid-area: slo;
+  }
+
+  .sli-metrics-table .metric-actions-cell {
+    grid-area: actions;
+  }
+
+  .sli-metrics-table .metric-actions-cell button {
+    width: 100%;
+    padding-inline: 6px;
+  }
+
+  .sli-metrics-table .metric-name-col,
+  .sli-metrics-table .metric-number-col,
+  .sli-metrics-table .metric-actions-col {
+    width: auto;
+  }
 }
 
 .percentage-cell {

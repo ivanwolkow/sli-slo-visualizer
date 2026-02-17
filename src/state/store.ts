@@ -49,8 +49,8 @@ const createId = (): string => {
 };
 
 const defaultBuckets = (): LatencyBucket[] => [
-  { id: createId(), percentage: 80, latencyMs: 800 },
-  { id: createId(), percentage: 20, latencyMs: 1200 }
+  { id: createId(), percentage: 95, latencyMs: 800 },
+  { id: createId(), percentage: 5, latencyMs: 1200 }
 ];
 
 const defaultMetrics = (): SliMetricConfig[] => [
