@@ -1,4 +1,4 @@
-import { getBurnRateStatus } from '../domain/calculations';
+import { getBurnRateStatus, getErrorBudgetStatus } from '../domain/calculations';
 import type { MetricSnapshot, SliMetricConfig } from '../domain/types';
 
 interface MetricCardProps {
@@ -28,12 +28,16 @@ const formatBurnRate = (value: number | null): string => {
 
 export const MetricCard = ({ metric, snapshot }: MetricCardProps): JSX.Element => {
   const burnStatus = getBurnRateStatus(snapshot.burnRate);
+  const budgetStatus = getErrorBudgetStatus(snapshot.errorBudgetRemainingPct);
 
   return (
     <article className="metric-card reveal">
       <header className="metric-card-header">
         <h3>{metric.name}</h3>
-        <span className={`pill burn-${burnStatus}`}>Burn {burnStatus.toUpperCase()}</span>
+        <div className="metric-status-pills">
+          <span className={`pill burn-${burnStatus}`}>Burn {burnStatus.toUpperCase()}</span>
+          <span className={`pill budget-${budgetStatus}`}>Budget {budgetStatus.toUpperCase()}</span>
+        </div>
       </header>
 
       <dl className="metric-values">

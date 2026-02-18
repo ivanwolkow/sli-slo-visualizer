@@ -258,6 +258,31 @@ button:not(:disabled):hover {
   color: #56707c;
 }
 
+.budget-green {
+  background: #dff8ea;
+  color: #1f6b43;
+}
+
+.budget-yellow {
+  background: #fff2d9;
+  color: #8b6514;
+}
+
+.budget-red {
+  background: #ffdedd;
+  color: #8f1f1f;
+}
+
+.budget-exhausted {
+  background: #ffc9c9;
+  color: #7b0e0e;
+}
+
+.budget-na {
+  background: #edf3f6;
+  color: #56707c;
+}
+
 .editor-table {
   width: 100%;
   border-collapse: collapse;
@@ -430,9 +455,17 @@ button:not(:disabled):hover {
 .metric-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 10px;
+}
+
+.metric-status-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .metric-values {

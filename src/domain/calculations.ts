@@ -51,3 +51,25 @@ export const getBurnRateStatus = (burnRate: number | null): 'green' | 'yellow' |
 
   return 'red';
 };
+
+export const getErrorBudgetStatus = (
+  errorBudgetRemainingPct: number | null
+): 'green' | 'yellow' | 'red' | 'exhausted' | 'na' => {
+  if (errorBudgetRemainingPct === null || !Number.isFinite(errorBudgetRemainingPct)) {
+    return 'na';
+  }
+
+  if (errorBudgetRemainingPct <= 0) {
+    return 'exhausted';
+  }
+
+  if (errorBudgetRemainingPct < 20) {
+    return 'red';
+  }
+
+  if (errorBudgetRemainingPct < 50) {
+    return 'yellow';
+  }
+
+  return 'green';
+};
