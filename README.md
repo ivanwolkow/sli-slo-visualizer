@@ -41,6 +41,11 @@ npm run dev
 Open:
 - `http://localhost:5173`
 
+## Screenshots
+
+Main simulation view with simulation controls, metric cards, and latency distribution editor.
+![Simulation dashboard](docs/screenshots/screenshot-1.png)
+
 ## Scripts
 
 - `npm run dev` - start local dev server

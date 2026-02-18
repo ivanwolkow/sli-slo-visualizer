@@ -63,7 +63,6 @@ function App(): JSX.Element {
             status={status}
             simTimeMs={snapshot.simTimeMs}
             totalStarted={snapshot.totalStarted}
-            totalCompleted={snapshot.totalCompleted}
             onRpsChange={setRps}
             onSpeedChange={setSpeedMultiplier}
             onStart={start}

@@ -6,7 +6,6 @@ interface ControlsPanelProps {
   status: 'idle' | 'running' | 'paused';
   simTimeMs: number;
   totalStarted: number;
-  totalCompleted: number;
   onRpsChange: (rps: number) => void;
   onSpeedChange: (speed: SpeedMultiplier) => void;
   onStart: () => void;
@@ -27,7 +26,6 @@ export const ControlsPanel = ({
   status,
   simTimeMs,
   totalStarted,
-  totalCompleted,
   onRpsChange,
   onSpeedChange,
   onStart,
@@ -101,12 +99,8 @@ export const ControlsPanel = ({
           <span className="value">{formatSimTime(simTimeMs)}</span>
         </div>
         <div className="stat-item">
-          <span className="label">Requests started</span>
+          <span className="label">Requests sent</span>
           <span className="value">{totalStarted.toLocaleString()}</span>
-        </div>
-        <div className="stat-item">
-          <span className="label">Requests completed</span>
-          <span className="value">{totalCompleted.toLocaleString()}</span>
         </div>
       </div>
     </section>

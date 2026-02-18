@@ -17,7 +17,6 @@ const Harness = (): JSX.Element => {
       status={status}
       simTimeMs={simTimeMs}
       totalStarted={1000}
-      totalCompleted={750}
       onRpsChange={setRps}
       onSpeedChange={setSpeedMultiplier}
       onStart={() => {

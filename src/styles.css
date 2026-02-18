@@ -201,10 +201,18 @@ button:not(:disabled):hover {
 }
 
 .stat-item {
+  display: grid;
+  align-content: start;
+  gap: 6px;
   padding: 10px;
   border-radius: 10px;
   border: 1px solid #c6dde6;
   background: #f8fdff;
+}
+
+.stat-item .label,
+.stat-item .value {
+  display: block;
 }
 
 .stat-item .value,
