@@ -52,7 +52,15 @@ export const validateSliMetric = (metric: SliMetricConfig): ValidationResult => 
   }
 
   if (!toFiniteNumber(metric.windowSec) || metric.windowSec < 10 || metric.windowSec > 600) {
-    errors.push('Window must be between 10 and 600 seconds.');
+    errors.push('SLI window must be between 10 and 600 seconds.');
+  }
+
+  if (!toFiniteNumber(metric.burnWindowSec) || metric.burnWindowSec < 5 || metric.burnWindowSec > 600) {
+    errors.push('Burn window must be between 5 and 600 seconds.');
+  }
+
+  if (metric.burnWindowSec > metric.windowSec) {
+    errors.push('Burn window must be less than or equal to SLI window.');
   }
 
   if (!toFiniteNumber(metric.sloTargetPct) || metric.sloTargetPct < 90 || metric.sloTargetPct > 99.99) {

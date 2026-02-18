@@ -80,4 +80,19 @@ describe('simulation store bucket balancing', () => {
     const namesAfterUp = store.getState().config.metrics.map((metric) => metric.name);
     expect(namesAfterUp).toEqual(['SLI <= 1000ms / 60s', 'SLI <= 1000ms / 300s', 'SLI <= 1000ms / 30s']);
   });
+
+  it('creates metrics with default burn window and updates burn window', async () => {
+    vi.resetModules();
+    const store = await loadStore();
+
+    expect(store.getState().config.metrics.every((metric) => metric.burnWindowSec === 5)).toBe(true);
+
+    store.getState().addMetric();
+    const added = store.getState().config.metrics[store.getState().config.metrics.length - 1];
+    expect(added.burnWindowSec).toBe(5);
+
+    store.getState().updateMetric(added.id, { burnWindowSec: 10 });
+    const updated = store.getState().config.metrics.find((metric) => metric.id === added.id);
+    expect(updated?.burnWindowSec).toBe(10);
+  });
 });

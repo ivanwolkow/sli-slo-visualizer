@@ -107,26 +107,19 @@ class MinHeap<T> {
   }
 }
 
-export class SlidingWindowMetricState {
-  private metric: SliMetricConfig;
+class RollingWindowCounter {
   private readonly windowBins: number;
   private readonly goodBins: number[];
   private readonly totalBins: number[];
   private rollingGood = 0;
   private rollingTotal = 0;
   private currentBin: number;
-  private readonly series: MetricSeriesPoint[] = [];
 
-  public constructor(metric: SliMetricConfig, initialSimTimeMs: number) {
-    this.metric = metric;
-    this.windowBins = Math.max(1, Math.ceil((metric.windowSec * 1000) / BIN_MS));
+  public constructor(windowSec: number, initialSimTimeMs: number) {
+    this.windowBins = Math.max(1, Math.ceil((windowSec * 1000) / BIN_MS));
     this.goodBins = new Array<number>(this.windowBins).fill(0);
     this.totalBins = new Array<number>(this.windowBins).fill(0);
     this.currentBin = Math.floor(initialSimTimeMs / BIN_MS);
-  }
-
-  public getId(): string {
-    return this.metric.id;
   }
 
   public advanceTo(simTimeMs: number): void {
@@ -147,7 +140,7 @@ export class SlidingWindowMetricState {
     this.currentBin = targetBin;
   }
 
-  public recordLatency(completionTimeMs: number, latencyMs: number): void {
+  public recordLatency(completionTimeMs: number, latencyMs: number, thresholdMs: number): void {
     const completionBin = Math.floor(completionTimeMs / BIN_MS);
     const oldestAllowedBin = this.currentBin - this.windowBins + 1;
 
@@ -159,24 +152,64 @@ export class SlidingWindowMetricState {
     this.totalBins[index] += 1;
     this.rollingTotal += 1;
 
-    if (latencyMs <= this.metric.thresholdMs) {
+    if (latencyMs <= thresholdMs) {
       this.goodBins[index] += 1;
       this.rollingGood += 1;
     }
   }
 
+  public getGoodCount(): number {
+    return this.rollingGood;
+  }
+
+  public getTotalCount(): number {
+    return this.rollingTotal;
+  }
+}
+
+export class SlidingWindowMetricState {
+  private readonly metric: SliMetricConfig;
+  private readonly sliWindowCounter: RollingWindowCounter;
+  private readonly burnWindowCounter: RollingWindowCounter;
+  private readonly series: MetricSeriesPoint[] = [];
+
+  public constructor(metric: SliMetricConfig, initialSimTimeMs: number) {
+    this.metric = metric;
+    this.sliWindowCounter = new RollingWindowCounter(metric.windowSec, initialSimTimeMs);
+    this.burnWindowCounter = new RollingWindowCounter(metric.burnWindowSec, initialSimTimeMs);
+  }
+
+  public advanceTo(simTimeMs: number): void {
+    this.sliWindowCounter.advanceTo(simTimeMs);
+    this.burnWindowCounter.advanceTo(simTimeMs);
+  }
+
+  public recordLatency(completionTimeMs: number, latencyMs: number): void {
+    this.sliWindowCounter.recordLatency(completionTimeMs, latencyMs, this.metric.thresholdMs);
+    this.burnWindowCounter.recordLatency(completionTimeMs, latencyMs, this.metric.thresholdMs);
+  }
+
   public getSnapshot(simTimeMs: number): MetricSnapshot {
-    const sliPct = computeSliPct(this.rollingGood, this.rollingTotal);
+    const sliGoodCount = this.sliWindowCounter.getGoodCount();
+    const sliTotalCount = this.sliWindowCounter.getTotalCount();
+    const burnGoodCount = this.burnWindowCounter.getGoodCount();
+    const burnTotalCount = this.burnWindowCounter.getTotalCount();
+
+    const sliPct = computeSliPct(sliGoodCount, sliTotalCount);
+    const burnWindowSliPct = computeSliPct(burnGoodCount, burnTotalCount);
+
     const errorBudgetRemainingPct = computeErrorBudgetRemainingPct(sliPct, this.metric.sloTargetPct);
-    const burnRate = computeBurnRate(sliPct, this.metric.sloTargetPct);
+    const burnRate = computeBurnRate(burnWindowSliPct, this.metric.sloTargetPct);
 
     return {
       simTimeMs,
       sliPct,
       errorBudgetRemainingPct,
       burnRate,
-      goodCount: this.rollingGood,
-      totalCount: this.rollingTotal
+      goodCount: sliGoodCount,
+      totalCount: sliTotalCount,
+      burnGoodCount,
+      burnTotalCount
     };
   }
 
@@ -197,10 +230,7 @@ export class SlidingWindowMetricState {
   }
 
   private trimSeries(simTimeMs: number): void {
-    while (
-      this.series.length > 0 &&
-      simTimeMs - this.series[0].simTimeMs > CHART_RETENTION_MS
-    ) {
+    while (this.series.length > 0 && simTimeMs - this.series[0].simTimeMs > CHART_RETENTION_MS) {
       this.series.shift();
     }
   }
@@ -247,6 +277,7 @@ const areMetricsEquivalent = (left: SliMetricConfig[], right: SliMetricConfig[])
       metric.name === other.name &&
       metric.thresholdMs === other.thresholdMs &&
       metric.windowSec === other.windowSec &&
+      metric.burnWindowSec === other.burnWindowSec &&
       metric.sloTargetPct === other.sloTargetPct
     );
   });

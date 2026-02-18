@@ -61,6 +61,7 @@ const defaultMetrics = (): SliMetricConfig[] => [
     name: 'SLI <= 1000ms / 30s',
     thresholdMs: 1000,
     windowSec: 30,
+    burnWindowSec: 5,
     sloTargetPct: 90
   },
   {
@@ -68,6 +69,7 @@ const defaultMetrics = (): SliMetricConfig[] => [
     name: 'SLI <= 1000ms / 60s',
     thresholdMs: 1000,
     windowSec: 60,
+    burnWindowSec: 5,
     sloTargetPct: 90
   },
   {
@@ -75,6 +77,7 @@ const defaultMetrics = (): SliMetricConfig[] => [
     name: 'SLI <= 1000ms / 300s',
     thresholdMs: 1000,
     windowSec: 300,
+    burnWindowSec: 5,
     sloTargetPct: 90
   }
 ];
@@ -230,6 +233,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => {
         name: `SLI <= 1000ms / 60s`,
         thresholdMs: 1000,
         windowSec: 60,
+        burnWindowSec: 5,
         sloTargetPct: 90
       };
 

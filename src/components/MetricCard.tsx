@@ -50,9 +50,15 @@ export const MetricCard = ({ metric, snapshot }: MetricCardProps): JSX.Element =
           <dd>{formatBurnRate(snapshot.burnRate)}</dd>
         </div>
         <div>
-          <dt>Window counts</dt>
+          <dt>SLI window counts</dt>
           <dd>
             {snapshot.goodCount.toLocaleString()} / {snapshot.totalCount.toLocaleString()}
+          </dd>
+        </div>
+        <div>
+          <dt>Burn window counts</dt>
+          <dd>
+            {snapshot.burnGoodCount.toLocaleString()} / {snapshot.burnTotalCount.toLocaleString()}
           </dd>
         </div>
       </dl>

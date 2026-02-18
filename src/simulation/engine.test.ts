@@ -1,5 +1,5 @@
 import type { SimulationConfig } from '../domain/types';
-import { buildBucketSampler, SlidingWindowMetricState } from './engine';
+import { SimulationEngine, buildBucketSampler, SlidingWindowMetricState } from './engine';
 
 const baseConfig: SimulationConfig = {
   rps: 100,
@@ -18,13 +18,14 @@ describe('engine primitives', () => {
     vi.restoreAllMocks();
   });
 
-  it('slides request counts out of the window as time advances', () => {
+  it('slides request counts out of the sli window as time advances', () => {
     const metric = new SlidingWindowMetricState(
       {
         id: 'metric-1',
         name: 'm1',
         thresholdMs: 1000,
         windowSec: 1,
+        burnWindowSec: 1,
         sloTargetPct: 99
       },
       0
@@ -49,6 +50,7 @@ describe('engine primitives', () => {
         name: 'm2',
         thresholdMs: 1000,
         windowSec: 1,
+        burnWindowSec: 1,
         sloTargetPct: 99
       },
       0
@@ -60,6 +62,57 @@ describe('engine primitives', () => {
 
     const snapshot = metric.getSnapshot(1000);
     expect(snapshot.totalCount).toBe(1);
+  });
+
+  it('returns N/A burn rate when burn window has no completed requests', () => {
+    const metric = new SlidingWindowMetricState(
+      {
+        id: 'metric-3',
+        name: 'm3',
+        thresholdMs: 1000,
+        windowSec: 60,
+        burnWindowSec: 5,
+        sloTargetPct: 90
+      },
+      0
+    );
+
+    metric.advanceTo(6000);
+    metric.recordLatency(500, 500);
+
+    const snapshot = metric.getSnapshot(6000);
+    expect(snapshot.sliPct).not.toBeNull();
+    expect(snapshot.burnRate).toBeNull();
+  });
+
+  it('can show burn rate above 1 while long SLI is still above target', () => {
+    const metric = new SlidingWindowMetricState(
+      {
+        id: 'metric-4',
+        name: 'm4',
+        thresholdMs: 1000,
+        windowSec: 300,
+        burnWindowSec: 5,
+        sloTargetPct: 90
+      },
+      0
+    );
+
+    metric.advanceTo(299000);
+    for (let t = 0; t < 294000; t += 1000) {
+      metric.recordLatency(t, 500);
+    }
+
+    for (let t = 295000; t < 300000; t += 250) {
+      metric.recordLatency(t, 1200);
+    }
+
+    const snapshot = metric.getSnapshot(299000);
+
+    expect(snapshot.sliPct).not.toBeNull();
+    expect(snapshot.sliPct!).toBeGreaterThan(90);
+    expect(snapshot.burnRate).not.toBeNull();
+    expect(snapshot.burnRate!).toBeGreaterThan(1);
   });
 
   it('samples latency buckets near configured percentages', () => {
@@ -99,5 +152,27 @@ describe('engine primitives', () => {
     expect(pct900).toBeLessThan(21.5);
     expect(pct1100).toBeGreaterThan(8.5);
     expect(pct1100).toBeLessThan(11.5);
+  });
+
+  it('engine snapshot includes burn-window counts', () => {
+    const config: SimulationConfig = {
+      ...baseConfig,
+      metrics: [
+        {
+          id: 'metric-main',
+          name: 'main',
+          thresholdMs: 1000,
+          windowSec: 30,
+          burnWindowSec: 5,
+          sloTargetPct: 90
+        }
+      ]
+    };
+
+    const engine = new SimulationEngine(config);
+    const snapshot = engine.getSnapshot();
+
+    expect(snapshot.metrics['metric-main'].burnGoodCount).toBe(0);
+    expect(snapshot.metrics['metric-main'].burnTotalCount).toBe(0);
   });
 });

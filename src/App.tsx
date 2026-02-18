@@ -12,7 +12,9 @@ const EMPTY_METRIC_SNAPSHOT: MetricSnapshot = {
   errorBudgetRemainingPct: null,
   burnRate: null,
   goodCount: 0,
-  totalCount: 0
+  totalCount: 0,
+  burnGoodCount: 0,
+  burnTotalCount: 0
 };
 
 const byBucketError = (error: string): boolean => error.startsWith('Bucket') || error.includes('latency bucket');

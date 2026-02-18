@@ -265,15 +265,15 @@ button:not(:disabled):hover {
 }
 
 .sli-metrics-table .metric-name-col {
-  width: 40%;
+  width: 27%;
 }
 
 .sli-metrics-table .metric-number-col {
-  width: 13%;
+  width: 10.5%;
 }
 
 .sli-metrics-table .metric-actions-col {
-  width: 21%;
+  width: 20.5%;
 }
 
 .metric-name-cell input {
@@ -304,7 +304,7 @@ button:not(:disabled):hover {
   display: none;
 }
 
-@container (max-width: 700px) {
+@container (max-width: 820px) {
   .sli-metrics-table {
     table-layout: auto;
   }
@@ -322,10 +322,10 @@ button:not(:disabled):hover {
   .sli-metrics-table tr {
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     grid-template-areas:
-      "name name name name"
-      "threshold window slo actions";
+      "name name name name name"
+      "threshold window burnWindow slo actions";
     gap: 8px;
     padding: 8px 0;
     border-bottom: 1px solid #d3e6ed;
@@ -356,6 +356,10 @@ button:not(:disabled):hover {
 
   .sli-metrics-table .metric-window-cell {
     grid-area: window;
+  }
+
+  .sli-metrics-table .metric-burn-window-cell {
+    grid-area: burnWindow;
   }
 
   .sli-metrics-table .metric-slo-cell {

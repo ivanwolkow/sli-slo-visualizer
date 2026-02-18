@@ -27,10 +27,38 @@ describe('validation', () => {
       name: '',
       thresholdMs: 0,
       windowSec: 2,
+      burnWindowSec: 1,
       sloTargetPct: 89
     });
 
     expect(result.ok).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
+  });
+
+  it('accepts burn window at minimum and within SLI window', () => {
+    const result = validateSliMetric({
+      id: 'm2',
+      name: 'valid',
+      thresholdMs: 1000,
+      windowSec: 30,
+      burnWindowSec: 5,
+      sloTargetPct: 90
+    });
+
+    expect(result.ok).toBe(true);
+  });
+
+  it('rejects burn window above sli window', () => {
+    const result = validateSliMetric({
+      id: 'm3',
+      name: 'invalid burn',
+      thresholdMs: 1000,
+      windowSec: 30,
+      burnWindowSec: 31,
+      sloTargetPct: 90
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors).toContain('Burn window must be less than or equal to SLI window.');
   });
 });

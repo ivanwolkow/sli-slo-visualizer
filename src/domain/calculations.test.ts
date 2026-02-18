@@ -36,4 +36,17 @@ describe('calculation formulas', () => {
     expect(computeBurnRate(null, 99)).toBeNull();
     expect(getBurnRateStatus(null)).toBe('na');
   });
+
+  it('supports burn rate > 1 while long-window sli can still be above target', () => {
+    const longWindowSli = 95;
+    const shortWindowSli = 80;
+    const slo = 90;
+
+    const budget = computeErrorBudgetRemainingPct(longWindowSli, slo);
+    const burnRate = computeBurnRate(shortWindowSli, slo);
+
+    expect(longWindowSli).toBeGreaterThan(slo);
+    expect(budget).toBeGreaterThan(0);
+    expect(burnRate).toBeGreaterThan(1);
+  });
 });

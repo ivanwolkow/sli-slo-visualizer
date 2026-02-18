@@ -11,6 +11,7 @@ export interface SliMetricConfig {
   name: string;
   thresholdMs: number;
   windowSec: number;
+  burnWindowSec: number;
   sloTargetPct: number;
 }
 
@@ -29,6 +30,8 @@ export interface MetricSnapshot {
   burnRate: number | null;
   goodCount: number;
   totalCount: number;
+  burnGoodCount: number;
+  burnTotalCount: number;
 }
 
 export interface MetricSeriesPoint {

@@ -9,6 +9,7 @@ const createMetric = (id: string): SliMetricConfig => ({
   name: `Metric ${id}`,
   thresholdMs: 1000,
   windowSec: 60,
+  burnWindowSec: 5,
   sloTargetPct: 99
 });
 
@@ -81,5 +82,16 @@ describe('SliMetricsEditor', () => {
 
     const firstRow = screen.getAllByRole('row')[1];
     expect(within(firstRow).getByRole('button', { name: 'Move Metric 2 up' })).toBeDisabled();
+  });
+
+  it('renders and updates burn window input', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+
+    const burnWindowInput = screen.getAllByLabelText('Metric burn window')[0];
+    await user.clear(burnWindowInput);
+    await user.type(burnWindowInput, '8');
+
+    expect((screen.getAllByLabelText('Metric burn window')[0] as HTMLInputElement).value).toBe('8');
   });
 });
