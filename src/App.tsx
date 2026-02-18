@@ -33,6 +33,7 @@ function App(): JSX.Element {
   const setBucketLatency = useSimulationStore((state) => state.setBucketLatency);
   const removeBucket = useSimulationStore((state) => state.removeBucket);
   const addMetric = useSimulationStore((state) => state.addMetric);
+  const setBurnWindowForAllMetrics = useSimulationStore((state) => state.setBurnWindowForAllMetrics);
   const updateMetric = useSimulationStore((state) => state.updateMetric);
   const moveMetricUp = useSimulationStore((state) => state.moveMetricUp);
   const moveMetricDown = useSimulationStore((state) => state.moveMetricDown);
@@ -83,6 +84,7 @@ function App(): JSX.Element {
             metrics={config.metrics}
             errors={metricErrors}
             onAddMetric={addMetric}
+            onSetBurnWindowForAllMetrics={setBurnWindowForAllMetrics}
             onUpdateMetric={updateMetric}
             onMoveMetricUp={moveMetricUp}
             onMoveMetricDown={moveMetricDown}

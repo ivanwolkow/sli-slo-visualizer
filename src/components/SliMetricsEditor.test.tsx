@@ -41,6 +41,14 @@ const Harness = (): JSX.Element => {
       metrics={metrics}
       errors={[]}
       onAddMetric={() => setMetrics((prev) => [...prev, createMetric(String(prev.length + 1))])}
+      onSetBurnWindowForAllMetrics={(burnWindowSec) =>
+        setMetrics((prev) =>
+          prev.map((metric) => ({
+            ...metric,
+            burnWindowSec: Math.min(burnWindowSec, metric.windowSec)
+          }))
+        )
+      }
       onUpdateMetric={(id, patch) =>
         setMetrics((prev) => prev.map((metric) => (metric.id === id ? { ...metric, ...patch } : metric)))
       }
@@ -93,5 +101,16 @@ describe('SliMetricsEditor', () => {
     await user.type(burnWindowInput, '8');
 
     expect((screen.getAllByLabelText('Metric burn window')[0] as HTMLInputElement).value).toBe('8');
+  });
+
+  it('updates all burn windows from burn window control', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+
+    await user.selectOptions(screen.getByLabelText('Burn window control'), '30');
+
+    expect((screen.getAllByLabelText('Metric burn window')[0] as HTMLInputElement).value).toBe('30');
+    expect((screen.getAllByLabelText('Metric burn window')[1] as HTMLInputElement).value).toBe('30');
+    expect((screen.getAllByLabelText('Metric burn window')[2] as HTMLInputElement).value).toBe('30');
   });
 });

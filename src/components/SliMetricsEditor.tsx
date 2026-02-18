@@ -4,6 +4,7 @@ interface SliMetricsEditorProps {
   metrics: SliMetricConfig[];
   errors: string[];
   onAddMetric: () => void;
+  onSetBurnWindowForAllMetrics: (burnWindowSec: number) => void;
   onUpdateMetric: (id: string, patch: Partial<SliMetricConfig>) => void;
   onMoveMetricUp: (id: string) => void;
   onMoveMetricDown: (id: string) => void;
@@ -14,18 +15,41 @@ export const SliMetricsEditor = ({
   metrics,
   errors,
   onAddMetric,
+  onSetBurnWindowForAllMetrics,
   onUpdateMetric,
   onMoveMetricUp,
   onMoveMetricDown,
   onRemoveMetric
 }: SliMetricsEditorProps): JSX.Element => {
+  const uniformBurnWindow = metrics.length > 0 && metrics.every((m) => m.burnWindowSec === metrics[0].burnWindowSec)
+    ? String(metrics[0].burnWindowSec)
+    : 'custom';
+
   return (
     <section className="panel reveal sli-metrics-panel">
       <div className="panel-header">
         <h2>SLI Metrics</h2>
-        <button type="button" className="btn-secondary" onClick={onAddMetric}>
-          Add metric
-        </button>
+        <div className="panel-header-actions">
+          <label className="field fluctuation-control">
+            <span>Burn window</span>
+            <select
+              aria-label="Burn window control"
+              value={uniformBurnWindow}
+              onChange={(event) => onSetBurnWindowForAllMetrics(Number(event.target.value))}
+            >
+              <option value="5">Short (5s)</option>
+              <option value="15">Medium (15s)</option>
+              <option value="30">Long (30s)</option>
+              <option value="60">Very long (60s)</option>
+              <option value="custom" disabled>
+                Custom
+              </option>
+            </select>
+          </label>
+          <button type="button" className="btn-secondary" onClick={onAddMetric}>
+            Add metric
+          </button>
+        </div>
       </div>
 
       <table className="editor-table sli-metrics-table">

@@ -95,4 +95,17 @@ describe('simulation store bucket balancing', () => {
     const updated = store.getState().config.metrics.find((metric) => metric.id === added.id);
     expect(updated?.burnWindowSec).toBe(10);
   });
+
+  it('updates burn window for all metrics from global control', async () => {
+    vi.resetModules();
+    const store = await loadStore();
+
+    store.getState().setBurnWindowForAllMetrics(30);
+    expect(store.getState().config.metrics.every((metric) => metric.burnWindowSec === 30)).toBe(true);
+
+    store.getState().setBurnWindowForAllMetrics(1000);
+    expect(
+      store.getState().config.metrics.every((metric) => metric.burnWindowSec <= metric.windowSec)
+    ).toBe(true);
+  });
 });

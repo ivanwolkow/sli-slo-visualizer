@@ -30,6 +30,7 @@ interface SimulationStore {
   setBucketLatency: (id: string, latencyMs: number) => void;
   removeBucket: (id: string) => void;
   addMetric: () => void;
+  setBurnWindowForAllMetrics: (burnWindowSec: number) => void;
   updateMetric: (id: string, patch: Partial<SliMetricConfig>) => void;
   moveMetricUp: (id: string) => void;
   moveMetricDown: (id: string) => void;
@@ -240,6 +241,21 @@ export const useSimulationStore = create<SimulationStore>((set, get) => {
       const nextConfig: SimulationConfig = {
         ...get().config,
         metrics: [...get().config.metrics, nextMetric]
+      };
+
+      applyConfig(nextConfig);
+    },
+
+    setBurnWindowForAllMetrics: (burnWindowSec) => {
+      const clamped = clamp(Math.round(burnWindowSec), 5, 600);
+      const nextMetrics = get().config.metrics.map((metric) => ({
+        ...metric,
+        burnWindowSec: Math.min(clamped, metric.windowSec)
+      }));
+
+      const nextConfig: SimulationConfig = {
+        ...get().config,
+        metrics: nextMetrics
       };
 
       applyConfig(nextConfig);
