@@ -24,6 +24,87 @@ const createSnapshot = (patch: Partial<MetricSnapshot> = {}): MetricSnapshot => 
 });
 
 describe('MetricCard', () => {
+  it('adds hover tooltips to key metric labels', () => {
+    render(<MetricCard metric={metric} snapshot={createSnapshot()} />);
+
+    const sliLabel = screen.getByText('SLI');
+    const budgetLabel = screen.getByText('Error budget remaining');
+    const burnLabel = screen.getByText('Burn rate');
+    const sliWindowCountsLabel = screen.getByText('SLI window counts');
+    const burnWindowCountsLabel = screen.getByText('Burn window counts');
+
+    expect(sliLabel).toHaveClass('metric-tooltip-label');
+    expect(sliLabel).toHaveAttribute('aria-describedby', 'metric-a-sli-tooltip');
+    expect(screen.getByRole('tooltip', { name: /percentage of requests in the sli window/i })).toHaveAttribute(
+      'id',
+      'metric-a-sli-tooltip'
+    );
+
+    expect(budgetLabel).toHaveClass('metric-tooltip-label');
+    expect(budgetLabel).toHaveAttribute('aria-describedby', 'metric-a-budget-tooltip');
+    expect(
+      screen.getByRole('tooltip', { name: /how much of the allowed error budget is left/i })
+    ).toHaveAttribute('id', 'metric-a-budget-tooltip');
+
+    expect(burnLabel).toHaveClass('metric-tooltip-label');
+    expect(burnLabel).toHaveAttribute('aria-describedby', 'metric-a-burn-tooltip');
+    expect(
+      screen.getByRole('tooltip', { name: /current consumption speed of the error budget/i })
+    ).toHaveAttribute('id', 'metric-a-burn-tooltip');
+
+    expect(sliWindowCountsLabel).toHaveClass('metric-tooltip-label');
+    expect(sliWindowCountsLabel).toHaveAttribute('aria-describedby', 'metric-a-sli-window-tooltip');
+    expect(
+      screen.getByRole('tooltip', { name: /completed requests in the sli window shown as good requests/i })
+    ).toHaveAttribute('id', 'metric-a-sli-window-tooltip');
+
+    expect(burnWindowCountsLabel).toHaveClass('metric-tooltip-label');
+    expect(burnWindowCountsLabel).toHaveAttribute('aria-describedby', 'metric-a-burn-window-tooltip');
+    expect(
+      screen.getByRole('tooltip', { name: /completed requests in the shorter burn window shown as good requests/i })
+    ).toHaveAttribute('id', 'metric-a-burn-window-tooltip');
+  });
+
+  it('keeps tooltip labels keyboard focusable for non-mouse users', () => {
+    render(<MetricCard metric={metric} snapshot={createSnapshot()} />);
+
+    expect(screen.getByText('SLI')).toHaveAttribute('tabindex', '0');
+    expect(screen.getByText('Error budget remaining')).toHaveAttribute('tabindex', '0');
+    expect(screen.getByText('Burn rate')).toHaveAttribute('tabindex', '0');
+    expect(screen.getByText('SLI window counts')).toHaveAttribute('tabindex', '0');
+    expect(screen.getByText('Burn window counts')).toHaveAttribute('tabindex', '0');
+  });
+
+  it('renders tooltip content text', () => {
+    render(<MetricCard metric={metric} snapshot={createSnapshot()} />);
+
+    expect(
+      screen.getByText(
+        'Percentage of requests in the SLI window that completed within the configured latency threshold.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'How much of the allowed error budget is left before the SLO is exhausted in the SLI window.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Current consumption speed of the error budget. Values above 1x mean budget is being consumed faster than planned.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Completed requests in the SLI window shown as good requests (within threshold) over total completed requests.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Completed requests in the shorter burn window shown as good requests (within threshold) over total completed requests.'
+      )
+    ).toBeInTheDocument();
+  });
+
   it('renders numeric percentage and meter semantics for finite value', () => {
     render(<MetricCard metric={metric} snapshot={createSnapshot()} />);
 

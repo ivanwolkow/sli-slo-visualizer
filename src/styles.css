@@ -489,6 +489,55 @@ button:not(:disabled):hover {
   background: #f9fdff;
 }
 
+.metric-tooltip-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+  text-decoration: underline dotted rgba(78, 103, 115, 0.55);
+  text-underline-offset: 2px;
+}
+
+.metric-tooltip-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translate(-50%, 6px);
+  min-width: 190px;
+  max-width: min(280px, 70vw);
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(12, 38, 50, 0.35);
+  background: rgba(20, 49, 62, 0.96);
+  color: #f8fcff;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  letter-spacing: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 30;
+  transition: opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
+  box-shadow: 0 10px 24px rgba(17, 57, 73, 0.28);
+}
+
+.metric-tooltip-bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(20, 49, 62, 0.96);
+}
+
+.metric-tooltip-label:hover .metric-tooltip-bubble,
+.metric-tooltip-label:focus-visible .metric-tooltip-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
 .metric-budget-reading {
   display: grid;
   gap: 7px;

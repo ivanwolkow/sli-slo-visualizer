@@ -27,6 +27,31 @@ interface BurnBarModel {
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
 const clampPct = (value: number): number => clamp(value, 0, 100);
+const SLI_TOOLTIP =
+  'Percentage of requests in the SLI window that completed within the configured latency threshold.';
+const ERROR_BUDGET_TOOLTIP =
+  'How much of the allowed error budget is left before the SLO is exhausted in the SLI window.';
+const BURN_RATE_TOOLTIP =
+  'Current consumption speed of the error budget. Values above 1x mean budget is being consumed faster than planned.';
+const SLI_WINDOW_COUNTS_TOOLTIP =
+  'Completed requests in the SLI window shown as good requests (within threshold) over total completed requests.';
+const BURN_WINDOW_COUNTS_TOOLTIP =
+  'Completed requests in the shorter burn window shown as good requests (within threshold) over total completed requests.';
+
+interface TooltipLabelProps {
+  id: string;
+  label: string;
+  tooltip: string;
+}
+
+const TooltipLabel = ({ id, label, tooltip }: TooltipLabelProps): JSX.Element => (
+  <span className="metric-tooltip-label" tabIndex={0} aria-describedby={id}>
+    {label}
+    <span className="metric-tooltip-bubble" role="tooltip" id={id}>
+      {tooltip}
+    </span>
+  </span>
+);
 
 const formatPercentage = (value: number | null): string => {
   if (value === null) {
@@ -121,24 +146,33 @@ export const MetricCard = ({ metric, snapshot }: MetricCardProps): JSX.Element =
   const budgetStatus = getErrorBudgetStatus(snapshot.errorBudgetRemainingPct);
   const budgetBar = toBudgetBarModel(snapshot.errorBudgetRemainingPct, budgetStatus);
   const burnBar = toBurnBarModel(snapshot.burnRate, burnStatus);
+  const sliTooltipId = `${metric.id}-sli-tooltip`;
+  const budgetTooltipId = `${metric.id}-budget-tooltip`;
+  const burnTooltipId = `${metric.id}-burn-tooltip`;
+  const sliWindowCountsTooltipId = `${metric.id}-sli-window-tooltip`;
+  const burnWindowCountsTooltipId = `${metric.id}-burn-window-tooltip`;
 
   return (
     <article className="metric-card reveal">
       <header className="metric-card-header">
         <h3>{metric.name}</h3>
-        <div className="metric-status-pills">
-          <span className={`pill burn-${burnStatus}`}>Burn {burnStatus.toUpperCase()}</span>
-          <span className={`pill budget-${budgetStatus}`}>Budget {budgetStatus.toUpperCase()}</span>
-        </div>
       </header>
 
       <dl className="metric-values">
         <div>
-          <dt>SLI</dt>
+          <dt>
+            <TooltipLabel id={sliTooltipId} label="SLI" tooltip={SLI_TOOLTIP} />
+          </dt>
           <dd>{formatPercentage(snapshot.sliPct)}</dd>
         </div>
         <div>
-          <dt>Error budget remaining</dt>
+          <dt>
+            <TooltipLabel
+              id={budgetTooltipId}
+              label="Error budget remaining"
+              tooltip={ERROR_BUDGET_TOOLTIP}
+            />
+          </dt>
           <dd>
             <div className="metric-budget-reading">
               <span className="metric-budget-number">
@@ -162,7 +196,9 @@ export const MetricCard = ({ metric, snapshot }: MetricCardProps): JSX.Element =
           </dd>
         </div>
         <div>
-          <dt>Burn rate</dt>
+          <dt>
+            <TooltipLabel id={burnTooltipId} label="Burn rate" tooltip={BURN_RATE_TOOLTIP} />
+          </dt>
           <dd>
             <div className="metric-burn-reading">
               <span className="metric-burn-number">{formatBurnRate(snapshot.burnRate)}</span>
@@ -192,13 +228,25 @@ export const MetricCard = ({ metric, snapshot }: MetricCardProps): JSX.Element =
           </dd>
         </div>
         <div>
-          <dt>SLI window counts</dt>
+          <dt>
+            <TooltipLabel
+              id={sliWindowCountsTooltipId}
+              label="SLI window counts"
+              tooltip={SLI_WINDOW_COUNTS_TOOLTIP}
+            />
+          </dt>
           <dd>
             {snapshot.goodCount.toLocaleString()} / {snapshot.totalCount.toLocaleString()}
           </dd>
         </div>
         <div>
-          <dt>Burn window counts</dt>
+          <dt>
+            <TooltipLabel
+              id={burnWindowCountsTooltipId}
+              label="Burn window counts"
+              tooltip={BURN_WINDOW_COUNTS_TOOLTIP}
+            />
+          </dt>
           <dd>
             {snapshot.burnGoodCount.toLocaleString()} / {snapshot.burnTotalCount.toLocaleString()}
           </dd>
