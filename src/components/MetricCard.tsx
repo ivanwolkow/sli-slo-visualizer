@@ -14,7 +14,19 @@ interface BudgetBarModel {
   meterValueText?: string;
 }
 
-const clampPct = (value: number): number => Math.min(100, Math.max(0, value));
+interface BurnBarModel {
+  scaleMax: number;
+  markerPct: number;
+  greenEndPct: number;
+  yellowEndPct: number;
+  markerVariant: 'green' | 'yellow' | 'red' | 'na';
+  isNa: boolean;
+  meterValueNow?: number;
+  meterValueText?: string;
+}
+
+const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
+const clampPct = (value: number): number => clamp(value, 0, 100);
 
 const formatPercentage = (value: number | null): string => {
   if (value === null) {
@@ -65,10 +77,50 @@ const toBudgetBarModel = (
   };
 };
 
+const toBurnBarModel = (
+  burnRate: number | null,
+  burnStatus: ReturnType<typeof getBurnRateStatus>
+): BurnBarModel => {
+  const defaultScaleMax = 3;
+  const defaultGreenEndPct = (1 / defaultScaleMax) * 100;
+  const defaultYellowEndPct = (2 / defaultScaleMax) * 100;
+
+  if (burnRate === null || !Number.isFinite(burnRate)) {
+    return {
+      scaleMax: defaultScaleMax,
+      markerPct: 0,
+      greenEndPct: defaultGreenEndPct,
+      yellowEndPct: defaultYellowEndPct,
+      markerVariant: 'na',
+      isNa: true,
+      meterValueText: 'Not available'
+    };
+  }
+
+  const scaleMax = Math.max(defaultScaleMax, Math.ceil(burnRate));
+  const greenEndPct = clampPct((1 / scaleMax) * 100);
+  const yellowEndPct = clampPct((2 / scaleMax) * 100);
+  const rawMarkerPct = clampPct((burnRate / scaleMax) * 100);
+  const markerPct = clamp(rawMarkerPct, 1, 99);
+  const markerVariant =
+    burnStatus === 'green' || burnStatus === 'yellow' || burnStatus === 'red' ? burnStatus : 'na';
+
+  return {
+    scaleMax,
+    markerPct,
+    greenEndPct,
+    yellowEndPct,
+    markerVariant,
+    isNa: false,
+    meterValueNow: Number(burnRate.toFixed(2))
+  };
+};
+
 export const MetricCard = ({ metric, snapshot }: MetricCardProps): JSX.Element => {
   const burnStatus = getBurnRateStatus(snapshot.burnRate);
   const budgetStatus = getErrorBudgetStatus(snapshot.errorBudgetRemainingPct);
   const budgetBar = toBudgetBarModel(snapshot.errorBudgetRemainingPct, budgetStatus);
+  const burnBar = toBurnBarModel(snapshot.burnRate, burnStatus);
 
   return (
     <article className="metric-card reveal">
@@ -111,7 +163,33 @@ export const MetricCard = ({ metric, snapshot }: MetricCardProps): JSX.Element =
         </div>
         <div>
           <dt>Burn rate</dt>
-          <dd>{formatBurnRate(snapshot.burnRate)}</dd>
+          <dd>
+            <div className="metric-burn-reading">
+              <span className="metric-burn-number">{formatBurnRate(snapshot.burnRate)}</span>
+              <div
+                className={`burn-bar-track${burnBar.isNa ? ' burn-bar-track-na' : ''}`}
+                role="meter"
+                aria-label={`${metric.name} burn rate`}
+                aria-valuemin={0}
+                aria-valuemax={burnBar.scaleMax}
+                aria-valuenow={burnBar.meterValueNow}
+                aria-valuetext={burnBar.meterValueText}
+              >
+                <span
+                  className={`burn-bar-zones${burnBar.isNa ? ' burn-bar-zones-na' : ''}`}
+                  style={{
+                    background: `linear-gradient(90deg, var(--ok) 0 ${burnBar.greenEndPct}%, var(--warn) ${burnBar.greenEndPct}% ${burnBar.yellowEndPct}%, var(--danger) ${burnBar.yellowEndPct}% 100%)`
+                  }}
+                />
+                <span className="burn-bar-threshold burn-bar-threshold-1x" style={{ left: `${burnBar.greenEndPct}%` }} />
+                <span className="burn-bar-threshold burn-bar-threshold-2x" style={{ left: `${burnBar.yellowEndPct}%` }} />
+                <span
+                  className={`burn-bar-marker burn-bar-marker-${burnBar.markerVariant}`}
+                  style={{ left: `${burnBar.markerPct}%` }}
+                />
+              </div>
+            </div>
+          </dd>
         </div>
         <div>
           <dt>SLI window counts</dt>
