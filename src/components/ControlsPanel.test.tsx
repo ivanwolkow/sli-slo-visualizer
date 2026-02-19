@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import type { SpeedMultiplier } from '../domain/types';
 import { ControlsPanel } from './ControlsPanel';
 
@@ -66,5 +66,15 @@ describe('ControlsPanel', () => {
     await user.click(speed60x);
     expect(speed60x).toHaveAttribute('aria-checked', 'true');
     expect(speed1x).toHaveAttribute('aria-checked', 'false');
+  });
+
+  it('updates RPS from a single slider control', () => {
+    render(<Harness />);
+
+    const slider = screen.getByLabelText('Requests per second');
+    expect(screen.getByText('100 rps')).toBeInTheDocument();
+
+    fireEvent.change(slider, { target: { value: '1000' } });
+    expect(screen.getByText('1,000 rps')).toBeInTheDocument();
   });
 });
