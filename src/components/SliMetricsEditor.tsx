@@ -115,11 +115,9 @@ export const SliMetricsEditor = ({
                   value={metric.windowSec}
                   onChange={(event) => {
                     const nextSliWindow = Number(event.target.value);
-                    const nextBurnWindow = Math.min(metric.burnWindowSec, nextSliWindow);
 
                     onUpdateMetric(metric.id, {
-                      windowSec: nextSliWindow,
-                      burnWindowSec: nextBurnWindow
+                      windowSec: nextSliWindow
                     });
                   }}
                 />
