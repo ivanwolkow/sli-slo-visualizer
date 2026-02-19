@@ -91,38 +91,42 @@ export const ControlsPanel = ({
           </div>
         </label>
 
-        <div className="field">
-          <span>Simulation speed</span>
-          <div className="speed-segmented" role="radiogroup" aria-label="Simulation speed">
-            {SPEED_OPTIONS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                role="radio"
-                aria-checked={speedMultiplier === option}
-                className={`speed-option ${speedMultiplier === option ? 'speed-option-active' : ''}`}
-                onClick={() => onSpeedChange(option)}
-              >
-                {option}x
+        <div className="speed-actions-row">
+          <div className="field">
+            <span>Simulation speed</span>
+            <div className="speed-segmented" role="radiogroup" aria-label="Simulation speed">
+              {SPEED_OPTIONS.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  role="radio"
+                  aria-checked={speedMultiplier === option}
+                  className={`speed-option ${speedMultiplier === option ? 'speed-option-active' : ''}`}
+                  onClick={() => onSpeedChange(option)}
+                >
+                  {option}x
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="controls-actions">
+            <div className="button-row controls-button-row">
+              {status === 'running' ? (
+                <button type="button" className="btn-secondary" onClick={onPause}>
+                  Pause
+                </button>
+              ) : (
+                <button type="button" className="btn-primary" onClick={onStart}>
+                  Start
+                </button>
+              )}
+              <button type="button" className="btn-ghost" onClick={onReset}>
+                Reset
               </button>
-            ))}
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className="button-row">
-        {status === 'running' ? (
-          <button type="button" className="btn-secondary" onClick={onPause}>
-            Pause
-          </button>
-        ) : (
-          <button type="button" className="btn-primary" onClick={onStart}>
-            Start
-          </button>
-        )}
-        <button type="button" className="btn-ghost" onClick={onReset}>
-          Reset
-        </button>
       </div>
 
       <div className="stats-row">

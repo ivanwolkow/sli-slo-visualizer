@@ -207,6 +207,26 @@ button:focus-visible {
   gap: 6px;
 }
 
+.speed-actions-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.controls-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.controls-button-row {
+  margin-top: 0;
+}
+
+.controls-button-row button {
+  min-width: 94px;
+}
+
 .speed-option {
   border: 1px solid #9fc4d1;
   border-radius: 10px;
@@ -787,6 +807,14 @@ button:not(:disabled):hover {
 
   .button-row {
     flex-wrap: wrap;
+  }
+
+  .speed-actions-row {
+    grid-template-columns: 1fr;
+  }
+
+  .controls-actions {
+    justify-content: flex-start;
   }
 
   .panel-header {
