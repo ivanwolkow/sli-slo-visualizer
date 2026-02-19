@@ -395,15 +395,15 @@ button:not(:disabled):hover {
 }
 
 .sli-metrics-table .metric-name-col {
-  width: 27%;
+  width: 32%;
 }
 
 .sli-metrics-table .metric-number-col {
-  width: 10.5%;
+  width: 13%;
 }
 
 .sli-metrics-table .metric-actions-col {
-  width: 20.5%;
+  width: 29%;
 }
 
 .metric-name-cell input {
@@ -434,6 +434,15 @@ button:not(:disabled):hover {
   display: none;
 }
 
+.metric-label-main,
+.metric-label-unit {
+  display: block;
+}
+
+.metric-label-unit {
+  line-height: 1.2;
+}
+
 @container (max-width: 820px) {
   .sli-metrics-table {
     table-layout: auto;
@@ -452,10 +461,10 @@ button:not(:disabled):hover {
   .sli-metrics-table tr {
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-template-areas:
-      "name name name name name"
-      "threshold window burnWindow slo actions";
+      "name name name name"
+      "threshold window slo actions";
     gap: 8px;
     padding: 8px 0;
     border-bottom: 1px solid #d3e6ed;
@@ -474,6 +483,11 @@ button:not(:disabled):hover {
     font-size: 0.78rem;
     font-weight: 600;
     line-height: 1.2;
+    min-height: 2.35em;
+  }
+
+  .sli-metrics-table .metric-name-cell .compact-field-label {
+    min-height: 0;
   }
 
   .sli-metrics-table .metric-name-cell {
@@ -486,10 +500,6 @@ button:not(:disabled):hover {
 
   .sli-metrics-table .metric-window-cell {
     grid-area: window;
-  }
-
-  .sli-metrics-table .metric-burn-window-cell {
-    grid-area: burnWindow;
   }
 
   .sli-metrics-table .metric-slo-cell {

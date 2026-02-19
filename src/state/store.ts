@@ -229,12 +229,13 @@ export const useSimulationStore = create<SimulationStore>((set, get) => {
     },
 
     addMetric: () => {
+      const currentBurnWindowSec = get().config.metrics[0]?.burnWindowSec ?? 5;
       const nextMetric: SliMetricConfig = {
         id: createId(),
         name: `SLI <= 1000ms / 60s`,
         thresholdMs: 1000,
         windowSec: 60,
-        burnWindowSec: 5,
+        burnWindowSec: currentBurnWindowSec,
         sloTargetPct: 90
       };
 
@@ -247,7 +248,7 @@ export const useSimulationStore = create<SimulationStore>((set, get) => {
     },
 
     setBurnWindowForAllMetrics: (burnWindowSec) => {
-      const clamped = clamp(Math.round(burnWindowSec), 5, 600);
+      const clamped = clamp(Math.round(burnWindowSec), 5, 30);
       const nextMetrics = get().config.metrics.map((metric) => ({
         ...metric,
         burnWindowSec: Math.min(clamped, metric.windowSec)

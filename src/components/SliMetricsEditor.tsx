@@ -38,9 +38,8 @@ export const SliMetricsEditor = ({
               onChange={(event) => onSetBurnWindowForAllMetrics(Number(event.target.value))}
             >
               <option value="5">Short (5s)</option>
-              <option value="15">Medium (15s)</option>
+              <option value="10">Medium (10s)</option>
               <option value="30">Long (30s)</option>
-              <option value="60">Very long (60s)</option>
               <option value="custom" disabled>
                 Custom
               </option>
@@ -56,10 +55,18 @@ export const SliMetricsEditor = ({
         <thead>
           <tr>
             <th className="metric-name-col">Name</th>
-            <th className="metric-number-col">Threshold (ms)</th>
-            <th className="metric-number-col">SLI window (sec)</th>
-            <th className="metric-number-col">Burn window (sec)</th>
-            <th className="metric-number-col">SLO target (%)</th>
+            <th className="metric-number-col">
+              <span className="metric-label-main">Threshold</span>
+              <span className="metric-label-unit">(ms)</span>
+            </th>
+            <th className="metric-number-col">
+              <span className="metric-label-main">SLI window</span>
+              <span className="metric-label-unit">(sec)</span>
+            </th>
+            <th className="metric-number-col">
+              <span className="metric-label-main">SLO target</span>
+              <span className="metric-label-unit">(%)</span>
+            </th>
             <th className="metric-actions-col">Actions</th>
           </tr>
         </thead>
@@ -76,7 +83,10 @@ export const SliMetricsEditor = ({
                 />
               </td>
               <td className="metric-threshold-cell">
-                <span className="compact-field-label">Threshold (ms)</span>
+                <span className="compact-field-label">
+                  <span className="metric-label-main">Threshold</span>
+                  <span className="metric-label-unit">(ms)</span>
+                </span>
                 <input
                   aria-label="Metric threshold"
                   type="number"
@@ -92,12 +102,15 @@ export const SliMetricsEditor = ({
                 />
               </td>
               <td className="metric-window-cell">
-                <span className="compact-field-label">SLI window (sec)</span>
+                <span className="compact-field-label">
+                  <span className="metric-label-main">SLI window</span>
+                  <span className="metric-label-unit">(sec)</span>
+                </span>
                 <input
                   aria-label="Metric SLI window"
                   type="number"
-                  min={10}
-                  max={600}
+                  min={30}
+                  max={3600}
                   step={1}
                   value={metric.windowSec}
                   onChange={(event) => {
@@ -111,24 +124,11 @@ export const SliMetricsEditor = ({
                   }}
                 />
               </td>
-              <td className="metric-burn-window-cell">
-                <span className="compact-field-label">Burn window (sec)</span>
-                <input
-                  aria-label="Metric burn window"
-                  type="number"
-                  min={5}
-                  max={600}
-                  step={1}
-                  value={metric.burnWindowSec}
-                  onChange={(event) =>
-                    onUpdateMetric(metric.id, {
-                      burnWindowSec: Number(event.target.value)
-                    })
-                  }
-                />
-              </td>
               <td className="metric-slo-cell">
-                <span className="compact-field-label">SLO target (%)</span>
+                <span className="compact-field-label">
+                  <span className="metric-label-main">SLO target</span>
+                  <span className="metric-label-unit">(%)</span>
+                </span>
                 <input
                   aria-label="SLO target"
                   type="number"

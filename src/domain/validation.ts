@@ -51,8 +51,8 @@ export const validateSliMetric = (metric: SliMetricConfig): ValidationResult => 
     errors.push('Threshold must be between 1 and 5000 ms.');
   }
 
-  if (!toFiniteNumber(metric.windowSec) || metric.windowSec < 10 || metric.windowSec > 600) {
-    errors.push('SLI window must be between 10 and 600 seconds.');
+  if (!toFiniteNumber(metric.windowSec) || metric.windowSec < 30 || metric.windowSec > 3600) {
+    errors.push('SLI window must be between 30 and 3600 seconds.');
   }
 
   if (!toFiniteNumber(metric.burnWindowSec) || metric.burnWindowSec < 5 || metric.burnWindowSec > 600) {

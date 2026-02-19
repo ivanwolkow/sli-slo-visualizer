@@ -92,25 +92,28 @@ describe('SliMetricsEditor', () => {
     expect(within(firstRow).getByRole('button', { name: 'Move Metric 2 up' })).toBeDisabled();
   });
 
-  it('renders and updates burn window input', async () => {
+  it('updates SLI window input with new minimum boundary', async () => {
     const user = userEvent.setup();
     render(<Harness />);
 
-    const burnWindowInput = screen.getAllByLabelText('Metric burn window')[0];
-    await user.clear(burnWindowInput);
-    await user.type(burnWindowInput, '8');
+    const sliWindowInput = screen.getAllByLabelText('Metric SLI window')[0];
+    await user.clear(sliWindowInput);
+    await user.type(sliWindowInput, '30');
 
-    expect((screen.getAllByLabelText('Metric burn window')[0] as HTMLInputElement).value).toBe('8');
+    expect((screen.getAllByLabelText('Metric SLI window')[0] as HTMLInputElement).value).toBe('30');
   });
 
   it('updates all burn windows from burn window control', async () => {
     const user = userEvent.setup();
     render(<Harness />);
 
-    await user.selectOptions(screen.getByLabelText('Burn window control'), '30');
+    expect((screen.getByLabelText('Burn window control') as HTMLSelectElement).value).toBe('5');
+    expect(screen.queryByLabelText('Metric burn window')).not.toBeInTheDocument();
 
-    expect((screen.getAllByLabelText('Metric burn window')[0] as HTMLInputElement).value).toBe('30');
-    expect((screen.getAllByLabelText('Metric burn window')[1] as HTMLInputElement).value).toBe('30');
-    expect((screen.getAllByLabelText('Metric burn window')[2] as HTMLInputElement).value).toBe('30');
+    await user.selectOptions(screen.getByLabelText('Burn window control'), '10');
+    expect((screen.getByLabelText('Burn window control') as HTMLSelectElement).value).toBe('10');
+
+    await user.selectOptions(screen.getByLabelText('Burn window control'), '30');
+    expect((screen.getByLabelText('Burn window control') as HTMLSelectElement).value).toBe('30');
   });
 });
