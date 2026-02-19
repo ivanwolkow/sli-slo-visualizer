@@ -55,6 +55,20 @@ Main simulation view with simulation controls, metric cards, and latency distrib
 - `npm run test:watch` - watch mode tests
 - `npm run test:e2e` - Playwright smoke/e2e tests
 
+## Deploy To GitHub Pages
+
+This repo includes a GitHub Actions workflow at `.github/workflows/deploy-pages.yml`.
+
+1. Push to `main` or `master`.
+2. In GitHub, go to `Settings -> Pages`.
+3. Under `Build and deployment`, set `Source` to `GitHub Actions`.
+4. Wait for the `Deploy to GitHub Pages` workflow to finish.
+5. Open the published URL shown in the workflow run or Pages settings.
+
+Notes:
+- The Vite `base` path is auto-detected during GitHub Actions builds, so project pages like `/sli-visualizer/` work without extra config.
+- For user/org pages repos named `<user>.github.io`, the app uses `/` as base.
+
 ## Metric Semantics
 
 SLI:
