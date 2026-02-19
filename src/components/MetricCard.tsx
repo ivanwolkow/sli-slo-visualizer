@@ -6,6 +6,16 @@ interface MetricCardProps {
   snapshot: MetricSnapshot;
 }
 
+interface BudgetBarModel {
+  widthPct: number;
+  fillVariant: 'green' | 'yellow' | 'red' | 'na';
+  isNa: boolean;
+  meterValueNow?: number;
+  meterValueText?: string;
+}
+
+const clampPct = (value: number): number => Math.min(100, Math.max(0, value));
+
 const formatPercentage = (value: number | null): string => {
   if (value === null) {
     return 'N/A';
@@ -26,9 +36,39 @@ const formatBurnRate = (value: number | null): string => {
   return `${value.toFixed(2)}x`;
 };
 
+const toBudgetBarModel = (
+  errorBudgetRemainingPct: number | null,
+  budgetStatus: ReturnType<typeof getErrorBudgetStatus>
+): BudgetBarModel => {
+  if (errorBudgetRemainingPct === null || !Number.isFinite(errorBudgetRemainingPct)) {
+    return {
+      widthPct: 0,
+      fillVariant: 'na',
+      isNa: true,
+      meterValueText: 'Not available'
+    };
+  }
+
+  const widthPct = clampPct(errorBudgetRemainingPct);
+  const fillVariant =
+    budgetStatus === 'exhausted'
+      ? 'red'
+      : budgetStatus === 'green' || budgetStatus === 'yellow' || budgetStatus === 'red'
+        ? budgetStatus
+        : 'na';
+
+  return {
+    widthPct,
+    fillVariant,
+    isNa: false,
+    meterValueNow: Number(widthPct.toFixed(2))
+  };
+};
+
 export const MetricCard = ({ metric, snapshot }: MetricCardProps): JSX.Element => {
   const burnStatus = getBurnRateStatus(snapshot.burnRate);
   const budgetStatus = getErrorBudgetStatus(snapshot.errorBudgetRemainingPct);
+  const budgetBar = toBudgetBarModel(snapshot.errorBudgetRemainingPct, budgetStatus);
 
   return (
     <article className="metric-card reveal">
@@ -47,7 +87,27 @@ export const MetricCard = ({ metric, snapshot }: MetricCardProps): JSX.Element =
         </div>
         <div>
           <dt>Error budget remaining</dt>
-          <dd>{formatPercentage(snapshot.errorBudgetRemainingPct)}</dd>
+          <dd>
+            <div className="metric-budget-reading">
+              <span className="metric-budget-number">
+                {formatPercentage(snapshot.errorBudgetRemainingPct)}
+              </span>
+              <div
+                className={`budget-bar-track${budgetBar.isNa ? ' budget-bar-track-na' : ''}`}
+                role="meter"
+                aria-label={`${metric.name} error budget remaining`}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={budgetBar.meterValueNow}
+                aria-valuetext={budgetBar.meterValueText}
+              >
+                <span
+                  className={`budget-bar-fill budget-bar-fill-${budgetBar.fillVariant}`}
+                  style={{ width: `${budgetBar.widthPct}%` }}
+                />
+              </div>
+            </div>
+          </dd>
         </div>
         <div>
           <dt>Burn rate</dt>

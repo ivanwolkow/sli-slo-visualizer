@@ -482,11 +482,58 @@ button:not(:disabled):hover {
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
-.metric-values div {
+.metric-values > div {
   padding: 9px;
   border-radius: 10px;
   border: 1px solid #cce1e9;
   background: #f9fdff;
+}
+
+.metric-budget-reading {
+  display: grid;
+  gap: 7px;
+}
+
+.metric-budget-number {
+  display: inline-block;
+  line-height: 1.1;
+}
+
+.budget-bar-track {
+  width: 100%;
+  height: 9px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid #c6dde6;
+  background: #e3f0f6;
+}
+
+.budget-bar-track-na {
+  border-color: #cddde5;
+  background: repeating-linear-gradient(135deg, #edf3f6 0 8px, #e2ebef 8px 16px);
+}
+
+.budget-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 220ms ease, background-color 220ms ease;
+}
+
+.budget-bar-fill-green {
+  background: var(--ok);
+}
+
+.budget-bar-fill-yellow {
+  background: var(--warn);
+}
+
+.budget-bar-fill-red {
+  background: var(--danger);
+}
+
+.budget-bar-fill-na {
+  background: #94aab6;
 }
 
 .chart-panel h3 {

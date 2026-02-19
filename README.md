@@ -20,7 +20,7 @@ in real time.
   - Burn window (sec)
   - SLO target (%)
 - Computes derived values per metric:
-  - Error budget remaining
+  - Error budget remaining (numeric + status-colored bar in metric cards)
   - Burn rate
 - Shows alert states for burn rate and error budget.
 - Lets you reorder metrics (cards and charts follow the same order).
