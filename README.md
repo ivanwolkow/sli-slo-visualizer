@@ -62,8 +62,9 @@ This repo includes a GitHub Actions workflow at `.github/workflows/deploy-pages.
 1. Push to `main` or `master`.
 2. In GitHub, go to `Settings -> Pages`.
 3. Under `Build and deployment`, set `Source` to `GitHub Actions`.
-4. Wait for the `Deploy to GitHub Pages` workflow to finish.
-5. Open the published URL shown in the workflow run or Pages settings.
+4. In GitHub, go to `Settings -> Secrets and variables -> Actions -> Variables` and add `CLARITY_PROJECT_ID` if you want Clarity enabled in production builds.
+5. Wait for the `Deploy to GitHub Pages` workflow to finish.
+6. Open the published URL shown in the workflow run or Pages settings.
 
 Notes:
 - The Vite `base` path is auto-detected during GitHub Actions builds, so project pages like `/sli-visualizer/` work without extra config.
