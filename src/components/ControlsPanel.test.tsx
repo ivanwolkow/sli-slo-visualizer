@@ -50,4 +50,21 @@ describe('ControlsPanel', () => {
     expect(screen.getByText('IDLE')).toBeInTheDocument();
     expect(screen.getByText('00:00')).toBeInTheDocument();
   });
+
+  it('switches speed from segmented controls', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+
+    const speed1x = screen.getByRole('radio', { name: '1x' });
+    const speed10x = screen.getByRole('radio', { name: '10x' });
+    const speed60x = screen.getByRole('radio', { name: '60x' });
+
+    expect(speed1x).toHaveAttribute('aria-checked', 'true');
+    expect(speed10x).toHaveAttribute('aria-checked', 'false');
+    expect(speed60x).toHaveAttribute('aria-checked', 'false');
+
+    await user.click(speed60x);
+    expect(speed60x).toHaveAttribute('aria-checked', 'true');
+    expect(speed1x).toHaveAttribute('aria-checked', 'false');
+  });
 });

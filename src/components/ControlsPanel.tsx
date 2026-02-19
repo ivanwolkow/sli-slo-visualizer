@@ -20,6 +20,8 @@ const formatSimTime = (simTimeMs: number): string => {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
+const SPEED_OPTIONS: SpeedMultiplier[] = [1, 10, 60];
+
 export const ControlsPanel = ({
   rps,
   speedMultiplier,
@@ -60,18 +62,23 @@ export const ControlsPanel = ({
           />
         </label>
 
-        <label className="field">
+        <div className="field">
           <span>Simulation speed</span>
-          <select
-            aria-label="Simulation speed"
-            value={speedMultiplier}
-            onChange={(event) => onSpeedChange(Number(event.target.value) as SpeedMultiplier)}
-          >
-            <option value={1}>1x</option>
-            <option value={10}>10x</option>
-            <option value={60}>60x</option>
-          </select>
-        </label>
+          <div className="speed-segmented" role="radiogroup" aria-label="Simulation speed">
+            {SPEED_OPTIONS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                role="radio"
+                aria-checked={speedMultiplier === option}
+                className={`speed-option ${speedMultiplier === option ? 'speed-option-active' : ''}`}
+                onClick={() => onSpeedChange(option)}
+              >
+                {option}x
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="button-row">
