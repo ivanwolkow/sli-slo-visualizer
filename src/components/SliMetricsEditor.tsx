@@ -11,6 +11,8 @@ interface SliMetricsEditorProps {
   onRemoveMetric: (id: string) => void;
 }
 
+const SLI_WINDOW_OPTIONS = [30, 60, 300, 600, 1800, 3600] as const;
+
 export const SliMetricsEditor = ({
   metrics,
   errors,
@@ -106,12 +108,8 @@ export const SliMetricsEditor = ({
                   <span className="metric-label-main">SLI window</span>
                   <span className="metric-label-unit">(sec)</span>
                 </span>
-                <input
+                <select
                   aria-label="Metric SLI window"
-                  type="number"
-                  min={30}
-                  max={3600}
-                  step={1}
                   value={metric.windowSec}
                   onChange={(event) => {
                     const nextSliWindow = Number(event.target.value);
@@ -120,7 +118,13 @@ export const SliMetricsEditor = ({
                       windowSec: nextSliWindow
                     });
                   }}
-                />
+                >
+                  {SLI_WINDOW_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}s
+                    </option>
+                  ))}
+                </select>
               </td>
               <td className="metric-slo-cell">
                 <span className="compact-field-label">

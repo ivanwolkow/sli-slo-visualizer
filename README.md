@@ -113,9 +113,9 @@ Error budget statuses:
   - `95% -> 800ms`
   - `5% -> 1200ms`
 - Default SLI metrics:
-  - `SLI <= 1000ms / 30s`, burn window `5s`, SLO `90%`
-  - `SLI <= 1000ms / 60s`, burn window `5s`, SLO `90%`
-  - `SLI <= 1000ms / 300s`, burn window `5s`, SLO `90%`
+  - `SLI <= 1000ms / 30s`, burn window `10s`, SLO `90%`
+  - `SLI <= 1000ms / 60s`, burn window `10s`, SLO `90%`
+  - `SLI <= 1000ms / 300s`, burn window `10s`, SLO `90%`
 
 ## Notes
 

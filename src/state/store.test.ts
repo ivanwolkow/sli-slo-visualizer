@@ -85,15 +85,15 @@ describe('simulation store bucket balancing', () => {
     vi.resetModules();
     const store = await loadStore();
 
-    expect(store.getState().config.metrics.every((metric) => metric.burnWindowSec === 5)).toBe(true);
+    expect(store.getState().config.metrics.every((metric) => metric.burnWindowSec === 10)).toBe(true);
 
     store.getState().addMetric();
     const added = store.getState().config.metrics[store.getState().config.metrics.length - 1];
-    expect(added.burnWindowSec).toBe(5);
+    expect(added.burnWindowSec).toBe(10);
 
-    store.getState().updateMetric(added.id, { burnWindowSec: 10 });
+    store.getState().updateMetric(added.id, { burnWindowSec: 5 });
     const updated = store.getState().config.metrics.find((metric) => metric.id === added.id);
-    expect(updated?.burnWindowSec).toBe(10);
+    expect(updated?.burnWindowSec).toBe(5);
   });
 
   it('updates burn window for all metrics from global control', async () => {

@@ -9,7 +9,7 @@ const createMetric = (id: string): SliMetricConfig => ({
   name: `Metric ${id}`,
   thresholdMs: 1000,
   windowSec: 60,
-  burnWindowSec: 5,
+  burnWindowSec: 10,
   sloTargetPct: 99
 });
 
@@ -92,26 +92,25 @@ describe('SliMetricsEditor', () => {
     expect(within(firstRow).getByRole('button', { name: 'Move Metric 2 up' })).toBeDisabled();
   });
 
-  it('updates SLI window input with new minimum boundary', async () => {
+  it('updates SLI window from dropdown options', async () => {
     const user = userEvent.setup();
     render(<Harness />);
 
-    const sliWindowInput = screen.getAllByLabelText('Metric SLI window')[0];
-    await user.clear(sliWindowInput);
-    await user.type(sliWindowInput, '30');
+    const sliWindowControl = screen.getAllByLabelText('Metric SLI window')[0];
+    await user.selectOptions(sliWindowControl, '3600');
 
-    expect((screen.getAllByLabelText('Metric SLI window')[0] as HTMLInputElement).value).toBe('30');
+    expect((screen.getAllByLabelText('Metric SLI window')[0] as HTMLSelectElement).value).toBe('3600');
   });
 
   it('updates all burn windows from burn window control', async () => {
     const user = userEvent.setup();
     render(<Harness />);
 
-    expect((screen.getByLabelText('Burn window control') as HTMLSelectElement).value).toBe('5');
+    expect((screen.getByLabelText('Burn window control') as HTMLSelectElement).value).toBe('10');
     expect(screen.queryByLabelText('Metric burn window')).not.toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText('Burn window control'), '10');
-    expect((screen.getByLabelText('Burn window control') as HTMLSelectElement).value).toBe('10');
+    await user.selectOptions(screen.getByLabelText('Burn window control'), '5');
+    expect((screen.getByLabelText('Burn window control') as HTMLSelectElement).value).toBe('5');
 
     await user.selectOptions(screen.getByLabelText('Burn window control'), '30');
     expect((screen.getByLabelText('Burn window control') as HTMLSelectElement).value).toBe('30');
