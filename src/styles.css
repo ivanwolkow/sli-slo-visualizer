@@ -70,6 +70,37 @@ dd {
   gap: 16px;
 }
 
+.site-footer {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--muted);
+  box-shadow: 0 8px 22px rgba(26, 79, 98, 0.09);
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.site-footer-separator {
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.site-footer-link {
+  color: #0e4c88;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.site-footer-link:hover {
+  color: #0a3f73;
+}
+
 .left-column,
 .right-column {
   display: grid;
@@ -813,6 +844,11 @@ button:not(:disabled):hover {
 
   .panel {
     padding: 14px;
+  }
+
+  .site-footer {
+    justify-content: flex-start;
+    padding: 10px 12px;
   }
 
   .button-row {

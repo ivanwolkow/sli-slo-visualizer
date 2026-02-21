@@ -119,6 +119,16 @@ function App(): JSX.Element {
           </section>
         </div>
       </main>
+
+      <footer className="site-footer reveal" aria-label="Site contact information">
+        <span>Built by Ivan Volkov</span>
+        <span className="site-footer-separator" aria-hidden="true">
+          •
+        </span>
+        <a className="site-footer-link" href="mailto:imwolkow@gmail.com">
+          imwolkow@gmail.com
+        </a>
+      </footer>
     </div>
   );
 }
