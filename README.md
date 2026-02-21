@@ -1,6 +1,6 @@
-# SLI/SLO Visualizer
+# Sloscope
 
-Interactive SLI/SLO simulator for latency-based reliability metrics.
+Interactive latency SLI/SLO simulator.
 
 Model request latency distribution, define sliding-window SLI metrics, and monitor:
 - SLI
@@ -67,8 +67,7 @@ This repo includes a GitHub Actions workflow at `.github/workflows/deploy-pages.
 6. Open the published URL shown in the workflow run or Pages settings.
 
 Notes:
-- The Vite `base` path is auto-detected during GitHub Actions builds, so project pages like `/sli-visualizer/` work without extra config.
-- For user/org pages repos named `<user>.github.io`, the app uses `/` as base.
+- This repo builds with `VITE_BASE_PATH=/` in GitHub Actions to support custom-domain hosting (for example `https://sloscope.xyz`).
 
 ## Metric Semantics
 

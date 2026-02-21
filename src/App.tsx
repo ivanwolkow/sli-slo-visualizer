@@ -48,11 +48,8 @@ function App(): JSX.Element {
   return (
     <div className="app-shell">
       <header className="hero reveal">
-        <h1>SLI / SLO Visualizer</h1>
-        <p>
-          Model a request-processing service, define latency SLIs over sliding windows, and observe
-          error-budget burn dynamics in real time.
-        </p>
+        <h1>Sloscope</h1>
+        <p>Interactive latency SLI/SLO simulator</p>
       </header>
 
       <main className="layout">
