@@ -3,6 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      (function () {
+        var storageKey = 'sloscope.themePreference';
+        var preference = 'system';
+
+        try {
+          var storedPreference = window.localStorage.getItem(storageKey);
+          if (storedPreference === 'light' || storedPreference === 'dark' || storedPreference === 'system') {
+            preference = storedPreference;
+          }
+        } catch (_error) {
+          preference = 'system';
+        }
+
+        var supportsMatchMedia = typeof window.matchMedia === 'function';
+        var isSystemDark = supportsMatchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var resolvedTheme = preference === 'system' ? (isSystemDark ? 'dark' : 'light') : preference;
+
+        document.documentElement.setAttribute('data-theme', resolvedTheme);
+      })();
+    </script>
     <title>SLI / SLO Visualizer</title>
   </head>
   <body>

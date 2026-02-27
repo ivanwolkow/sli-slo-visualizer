@@ -3,8 +3,10 @@ import { LatencyDistributionEditor } from './components/LatencyDistributionEdito
 import { MetricCard } from './components/MetricCard';
 import { MetricChart } from './components/MetricChart';
 import { SliMetricsEditor } from './components/SliMetricsEditor';
+import { ThemeModeControl } from './components/ThemeModeControl';
 import type { MetricSnapshot } from './domain/types';
 import { useSimulationStore } from './state/store';
+import { useThemePreference } from './theme/useThemePreference';
 
 const EMPTY_METRIC_SNAPSHOT: MetricSnapshot = {
   simTimeMs: 0,
@@ -21,6 +23,7 @@ const byBucketError = (error: string): boolean => error.startsWith('Bucket') || 
 const byMetricError = (error: string): boolean => error.startsWith('Metric') || error.includes('SLI metric');
 
 function App(): JSX.Element {
+  const { preference, setPreference } = useThemePreference();
   const config = useSimulationStore((state) => state.config);
   const status = useSimulationStore((state) => state.status);
   const validationErrors = useSimulationStore((state) => state.validationErrors);
@@ -48,8 +51,13 @@ function App(): JSX.Element {
   return (
     <div className="app-shell">
       <header className="hero reveal">
-        <h1>Sloscope</h1>
-        <p>Interactive latency SLI/SLO simulator</p>
+        <div className="hero-top">
+          <div className="hero-copy">
+            <h1>Sloscope</h1>
+            <p>Interactive latency SLI/SLO simulator</p>
+          </div>
+          <ThemeModeControl preference={preference} onPreferenceChange={setPreference} />
+        </div>
       </header>
 
       <main className="layout">

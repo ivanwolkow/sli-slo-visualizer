@@ -9,6 +9,13 @@ Model request latency distribution, define sliding-window SLI metrics, and monit
 
 in real time.
 
+## Live Simulator
+
+- Try it now: [sloscope.xyz](https://sloscope.xyz)
+
+Main simulation view with simulation controls, metric cards, and latency distribution editor.
+![Simulation dashboard](docs/screenshots/screenshot-1.png)
+
 ## What It Does
 
 - Simulates continuous traffic with configurable RPS.
@@ -24,6 +31,8 @@ in real time.
   - Burn rate
 - Shows alert states for burn rate and error budget.
 - Lets you reorder metrics (cards and charts follow the same order).
+- Supports theming with `System`, `Light`, and `Dark` modes.
+- Persists the selected theme preference in browser local storage (`sloscope.themePreference`).
 
 ## Quick Start
 
@@ -40,11 +49,6 @@ npm run dev
 
 Open:
 - `http://localhost:5173`
-
-## Screenshots
-
-Main simulation view with simulation controls, metric cards, and latency distribution editor.
-![Simulation dashboard](docs/screenshots/screenshot-1.png)
 
 ## Scripts
 

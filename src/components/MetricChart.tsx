@@ -22,6 +22,28 @@ interface ChartRow {
   burnRate: number | null;
 }
 
+const CHART_COLORS = {
+  grid: 'var(--chart-grid)',
+  axis: 'var(--chart-axis)',
+  burnAxis: 'var(--chart-burn-axis)',
+  sli: 'var(--chart-sli-line)',
+  budget: 'var(--chart-budget-line)',
+  burn: 'var(--chart-burn-line)'
+};
+
+const CHART_TOOLTIP_STYLE = {
+  backgroundColor: 'var(--chart-tooltip-bg)',
+  border: '1px solid var(--chart-tooltip-border)',
+  borderRadius: '8px',
+  color: 'var(--chart-tooltip-ink)'
+};
+
+const CHART_TOOLTIP_TEXT_STYLE = {
+  color: 'var(--chart-tooltip-ink)'
+};
+
+const formatLegendItem = (value: string): JSX.Element => <span style={{ color: 'var(--ink)' }}>{value}</span>;
+
 const toChartData = (series: MetricSeriesPoint[]): ChartRow[] =>
   series.map((point) => ({
     timeSec: Math.floor(point.simTimeMs / 1000),
@@ -39,23 +61,31 @@ export const MetricChart = ({ series, title }: MetricChartProps): JSX.Element =>
       <div className="chart-shell">
         <ResponsiveContainer width="100%" height={260}>
           <LineChart data={data} margin={{ top: 16, right: 32, left: 8, bottom: 8 }}>
-            <CartesianGrid strokeDasharray="4 4" stroke="rgba(18, 59, 72, 0.15)" />
-            <XAxis dataKey="timeSec" stroke="#194f63" tick={{ fontSize: 12 }} unit="s" />
+            <CartesianGrid strokeDasharray="4 4" stroke={CHART_COLORS.grid} />
+            <XAxis
+              dataKey="timeSec"
+              stroke={CHART_COLORS.axis}
+              tick={{ fill: CHART_COLORS.axis, fontSize: 12 }}
+              unit="s"
+            />
             <YAxis
               yAxisId="pct"
               domain={[0, 100]}
-              stroke="#194f63"
-              tick={{ fontSize: 12 }}
+              stroke={CHART_COLORS.axis}
+              tick={{ fill: CHART_COLORS.axis, fontSize: 12 }}
               tickFormatter={(value) => `${value}%`}
             />
             <YAxis
               yAxisId="burn"
               orientation="right"
               domain={[0, 'auto']}
-              stroke="#8b2e2e"
-              tick={{ fontSize: 12 }}
+              stroke={CHART_COLORS.burnAxis}
+              tick={{ fill: CHART_COLORS.burnAxis, fontSize: 12 }}
             />
             <Tooltip
+              contentStyle={CHART_TOOLTIP_STYLE}
+              itemStyle={CHART_TOOLTIP_TEXT_STYLE}
+              labelStyle={CHART_TOOLTIP_TEXT_STYLE}
               formatter={(value: unknown, name) => {
                 if (value === null || value === undefined) {
                   return ['N/A', name];
@@ -76,13 +106,13 @@ export const MetricChart = ({ series, title }: MetricChartProps): JSX.Element =>
                 return [`${value.toFixed(2)}%`, name];
               }}
             />
-            <Legend />
+            <Legend wrapperStyle={CHART_TOOLTIP_TEXT_STYLE} formatter={formatLegendItem} />
             <Line
               yAxisId="pct"
               type="monotone"
               dataKey="sliPct"
               name="SLI"
-              stroke="#1d7ad8"
+              stroke={CHART_COLORS.sli}
               strokeWidth={2}
               dot={false}
               connectNulls={false}
@@ -92,7 +122,7 @@ export const MetricChart = ({ series, title }: MetricChartProps): JSX.Element =>
               type="monotone"
               dataKey="errorBudgetRemainingPct"
               name="Budget remaining"
-              stroke="#f27a29"
+              stroke={CHART_COLORS.budget}
               strokeWidth={2}
               dot={false}
               connectNulls={false}
@@ -102,7 +132,7 @@ export const MetricChart = ({ series, title }: MetricChartProps): JSX.Element =>
               type="monotone"
               dataKey="burnRate"
               name="Burn rate"
-              stroke="#d64242"
+              stroke={CHART_COLORS.burn}
               strokeWidth={2}
               dot={false}
               connectNulls={false}
